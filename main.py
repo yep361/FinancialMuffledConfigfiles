@@ -16,9 +16,9 @@ else:
 def index():
     roast = None
     name = request.form.get('name', '') if request.method == 'POST' else ''
+    level = request.form.get('level', '순한맛') if request.method == 'POST' else '순한맛'
 
     if request.method == 'POST':
-        level = request.form.get('level', '순한맛')
         if not name:
             roast = "이름을 입력해주세요!"
         elif not api_key:
