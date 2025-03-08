@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>랜덤 로스트 🍗🔥</title>
+    <style>
+        body { background: white; font-family: sans-serif; text-align: center; }
+        .container { width: 700px; margin: 0 auto; }
+        .level-btn { background: white; border: 1px solid black; color: black; padding: 10px; margin: 5px; cursor: pointer; }
+        .level-btn:hover { background: #808080; color: white; }
+        .level-btn.selected { background: #4B4B4B; color: white; }
+        .start-btn { background: #FF5733; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        .card { border: 1px solid black; padding: 20px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>랜덤 로스트 🍗🔥</h1>
+        <p>AI가 당신의 앙숙을 바삭하게 크리스피로 구워드립니다. 이름만 쓰고 맡기세요. 😜</p>
+        <form method="POST">
+            <label>이름</label>
+            <input type="text" name="name" placeholder="앙숙의 이름을 입력해보세요" value="{{ name }}">
+            <br><br>
+            <button type="submit" name="level" value="순한맛" class="level-btn {% if roast and '순한맛' in request.form.get('level') %}selected{% endif %}">순한맛 🌿</button>
+            <button type="submit" name="level" value="매운맛" class="level-btn {% if roast and '매운맛' in request.form.get('level') %}selected{% endif %}">매운맛 🌶️</button>
+            <button type="submit" name="level" value="핵매운맛" class="level-btn {% if roast and '핵매�맛' in request.form.get('level') %}selected{% endif %}">핵매운맛 🔥</button>
+            <br><br>
+            <button type="submit" class="start-btn">🔥구워버리기!🔥</button>
+        </form>
+        {% if roast %}
+        <div class="card">
+            <p>{{ roast }}</p>
+            <form method="GET">
+                <button type="submit">다시 굽기!🔥</button>
+            </form>
+            <textarea readonly>공유하기📤: {{ roast }}</textarea>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
