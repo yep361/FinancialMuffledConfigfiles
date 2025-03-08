@@ -19,6 +19,10 @@ def index():
     level = request.form.get('level', '순한맛') if request.method == 'POST' else '순한맛'
 
     if request.method == 'POST':
+        # Debug output to identify the issue
+        print(f"Form data: {request.form}")
+        print(f"Name: {name}, Level: {level}")
+        
         if not name:
             roast = "이름을 입력해주세요!"
         elif not api_key:

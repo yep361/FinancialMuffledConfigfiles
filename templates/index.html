@@ -11,6 +11,28 @@
         .start-btn { background: #FF5733; color: white; padding: 10px 20px; border: none; cursor: pointer; }
         .card { border: 1px solid black; padding: 20px; margin: 20px 0; }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to level labels
+            document.querySelectorAll('.level-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    // Prevent form submission
+                    e.preventDefault();
+                    
+                    // Remove selected class from all buttons
+                    document.querySelectorAll('.level-btn').forEach(function(b) {
+                        b.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked button
+                    this.classList.add('selected');
+                    
+                    // Check the corresponding radio button
+                    document.getElementById(this.getAttribute('for')).checked = true;
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -20,9 +42,14 @@
             <label>이름</label>
             <input type="text" name="name" placeholder="앙숙의 이름을 입력해보세요" value="{{ name }}">
             <br><br>
-            <button type="submit" name="level" value="순한맛" class="level-btn {% if roast and '순한맛' in request.form.get('level') %}selected{% endif %}">순한맛 🌿</button>
-            <button type="submit" name="level" value="매운맛" class="level-btn {% if roast and '매운맛' in request.form.get('level') %}selected{% endif %}">매운맛 🌶️</button>
-            <button type="submit" name="level" value="핵매운맛" class="level-btn {% if roast and '핵매운맛' in request.form.get('level') %}selected{% endif %}">핵매운맛 🔥</button>
+            <input type="radio" id="mild" name="level" value="순한맛" checked hidden>
+            <label for="mild" class="level-btn {% if roast and request.form.get('level') == '순한맛' %}selected{% endif %}">순한맛 🌿</label>
+            
+            <input type="radio" id="spicy" name="level" value="매운맛" hidden>
+            <label for="spicy" class="level-btn {% if roast and request.form.get('level') == '매운맛' %}selected{% endif %}">매운맛 🌶️</label>
+            
+            <input type="radio" id="savage" name="level" value="핵매운맛" hidden>
+            <label for="savage" class="level-btn {% if roast and request.form.get('level') == '핵매운맛' %}selected{% endif %}">핵매운맛 🔥</label>
             <br><br>
             <button type="submit" class="start-btn">🔥구워버리기!🔥</button>
         </form>
