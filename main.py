@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request
 import os
 import google.generativeai as genai
@@ -31,19 +30,19 @@ def index():
                 ending = "야" if is_consonant_ended(name) else "아"
                 tone = "mild" if level == "순한맛" else "spicy" if level == "매운맛" else "savage"
                 prompt = f"""
-                Generate a 5-6 sentence roast in Korean starting with "{name}{ending}, 너는". The roast should:
-                - Target a quirky, imaginary habit of the named person (not the user) for a "lowkey dislike" vibe.
-                - Be playful, random, slightly annoying, no mean/personal/controversial content.
-                - Use absurd, teasing humor like "매번 남을 웃게 만든다고 자랑하던데, 사실 노잼의 연속이라서 웃을 때마다 조금 슬퍼져".
-                - Adjust tone: {tone} (mild=gentle, spicy=sharp, savage=burn).
-                - End with a soft twist like "그만 괴롭히고 잠시 쉬어라. 더 이상 감당 못 해! 🍖".
+                You are a witty Korean comedy writer and internet humor expert. Your task is to create ‘Korean-style roasts’ that blend internet community humor, variety show banter, and Twitter meme culture. The humor should be sharp yet playful—similar to how friends tease each other—but never overly crude or offensive. Avoid forced or unnatural translations, and use expressions that feel genuinely relatable to a Korean audience. The goal is to deliver short, punchy, and clever roasts that feel fun and engaging, while maintaining a balance between playful banter and lighthearted venting.
+                Generate a detailed and realistic roast in Korean, starting with "{name}{ending}, 너는". The roast should:
+                - Include specific traits or habits of the named person to ensure it feels personal and relevant.
+                - Be playfully annoying, maintaining an absurd yet teasing humor, without being mean or controversial.
+                - Reach a length of at least 5-6 sentences for depth, avoiding randomness to create coherence and fun.
                 - Use casual, natural Korean.
+                - only shows the korean roast. exclude any explanations and breakdowns.
                 """
                 model = genai.GenerativeModel('gemini-2.0-flash')  # Updated model
                 response = model.generate_content(prompt)
                 print(f"Raw response: {response}")
                 if response and hasattr(response, 'text'):
-                    roast = response.text
+                    roast = response.text  # AI의 응답 가져오기
                 else:
                     roast = "응답이 없어요! 모델을 확인해보세요 🍗"
             except Exception as e:

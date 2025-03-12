@@ -53,13 +53,14 @@
         }
         
         input[type="text"] {
-            width: 100%;
-            padding: 12px 15px;
-            margin: 10px 0;
+            width: 50%;
+            padding: 8px 10px;
+            margin: 10px auto;
             border: 1px solid #ddd;
             border-radius: var(--border-radius);
             font-size: 16px;
             box-sizing: border-box;
+            text-align: center;
         }
         
         .level-container {
@@ -73,13 +74,13 @@
             background: white;
             border: 2px solid #ddd;
             color: #555;
-            padding: 12px 20px;
+            padding: 8px 15px;
             border-radius: var(--border-radius);
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
             flex: 1;
-            max-width: 150px;
+            max-width: 120px;
         }
         
         .level-btn:hover {
@@ -236,7 +237,7 @@
                     <p>AI가 당신의 앙숙을 바삭하게 크리스피로 구워드립니다. 이름만 쓰고 맡기세요. 😜</p>
                     
                     <form method="POST">
-                        <label for="name-input">상대방 이름</label>
+                        <label for="name-input">상대방 이름</label><br>
                         <input type="text" id="name-input" name="name" placeholder="앙숙의 이름을 입력해보세요" value="{{ name }}">
                         
                         <p>매운맛 선택</p>
@@ -275,7 +276,7 @@
         </div>
         
         <div class="footer">
-            © 2023 랜덤 로스트 - AI로 만드는 재미있는 농담
+            © 2025 랜덤 로스트
         </div>
     </div>
 </body>
