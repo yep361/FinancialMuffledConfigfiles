@@ -221,11 +221,16 @@
             margin: 5px 0;
             display: block;
             
+        /* Media query for mobile responsiveness */
         @media (max-width: 600px) {
-            .card h1 {
-                font-size: 0.5em; /* More specific selector */
-                }
+            h1 {
+                font-size: 1.8em !important; /* Reduce heading size on mobile */
             }
+            
+            .card {
+                padding: 20px 15px; /* Slightly reduce padding on mobile */
+            }
+        }
     </style>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>  <!-- html2canvas 라이브러리 추가 -->
     <script>
