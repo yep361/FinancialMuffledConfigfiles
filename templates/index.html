@@ -4,6 +4,7 @@
     <title>랜덤 로스트 🍗🔥</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        
         :root {
             --primary-color: #FF5733;
             --secondary-color: #4B4B4B;
@@ -219,7 +220,12 @@
             width: 100%;
             margin: 5px 0;
             display: block;
-        }
+            
+        @media (max-width: 600px) {
+            .card h1 {
+                font-size: 0.5em; /* More specific selector */
+                }
+            }
     </style>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>  <!-- html2canvas 라이브러리 추가 -->
     <script>
@@ -613,7 +619,7 @@
                     <div class="share-container">
                         <button id="share-btn" class="button">공유하기 📤</button>
                         <form method="GET">
-                            <button type="submit" class="button secondary">다시 굽기 🔄</button>
+                            <button type="submit" class="button secondary">다시 하기 🔄</button>
                         </form>
                     </div>
                     <div id="share-options">
