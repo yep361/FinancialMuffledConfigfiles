@@ -94,6 +94,46 @@
             border-color: var(--secondary-color);
         }
         
+        .reason-container {
+            margin: 20px 0;
+        }
+        
+        .reason-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .reason-btn {
+            background: white;
+            border: 1px solid #ddd;
+            color: #555;
+            padding: 6px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .reason-btn:hover {
+            background: #eee;
+            border-color: #ccc;
+        }
+        
+        .reason-btn.selected {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .reason-note {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
         .button {
             background: var(--primary-color);
             color: white;
@@ -195,6 +235,39 @@
                 });
             });
             
+            // Add click handlers to reason buttons
+            document.querySelectorAll('.reason-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    // Prevent form submission
+                    e.preventDefault();
+                    
+                    // Remove selected class from all buttons
+                    document.querySelectorAll('.reason-btn').forEach(function(b) {
+                        b.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked button
+                    this.classList.add('selected');
+                    
+                    // Check the corresponding radio button
+                    document.getElementById(this.getAttribute('for')).checked = true;
+                    
+                    // Show/hide other reason input
+                    const otherReasonContainer = document.getElementById('other-reason-container');
+                    if (this.getAttribute('for') === 'reason-other') {
+                        otherReasonContainer.style.display = 'block';
+                        document.getElementById('other-reason-input').focus();
+                    } else {
+                        otherReasonContainer.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Initialize other reason container visibility
+            if (document.getElementById('reason-other').checked) {
+                document.getElementById('other-reason-container').style.display = 'block';
+            }
+            
             // Share button functionality
             const shareBtn = document.getElementById('share-btn');
             if (shareBtn) {
@@ -250,6 +323,56 @@
                             
                             <input type="radio" id="savage" name="level" value="핵매운맛" hidden>
                             <label for="savage" class="level-btn {% if request.form.get('level') == '핵매운맛' %}selected{% endif %}">핵매운맛 🔥</label>
+                        </div>
+                        
+                        <p>짜증나는 이유</p>
+                        <div class="reason-container">
+                            <div class="reason-options">
+                                <input type="radio" id="reason-random" name="reason" value="랜덤" checked hidden>
+                                <label for="reason-random" class="reason-btn {% if request.form.get('reason') == '랜덤' or not request.form.get('reason') %}selected{% endif %}">랜덤</label>
+                                
+                                <input type="radio" id="reason-shallow" name="reason" value="생각이 짧음" hidden>
+                                <label for="reason-shallow" class="reason-btn {% if request.form.get('reason') == '생각이 짧음' %}selected{% endif %}">생각이 짧음 🤔</label>
+                                
+                                <input type="radio" id="reason-lazy" name="reason" value="게으름" hidden>
+                                <label for="reason-lazy" class="reason-btn {% if request.form.get('reason') == '게으름' %}selected{% endif %}">게으름 😴</label>
+                                
+                                <input type="radio" id="reason-late" name="reason" value="지각" hidden>
+                                <label for="reason-late" class="reason-btn {% if request.form.get('reason') == '지각' %}selected{% endif %}">지각 ⏰</label>
+                                
+                                <input type="radio" id="reason-talker" name="reason" value="투머치토커" hidden>
+                                <label for="reason-talker" class="reason-btn {% if request.form.get('reason') == '투머치토커' %}selected{% endif %}">투머치토커 🗣️</label>
+                                
+                                <input type="radio" id="reason-nowork" name="reason" value="일을 안 함" hidden>
+                                <label for="reason-nowork" class="reason-btn {% if request.form.get('reason') == '일을 안 함' %}selected{% endif %}">일을 안 함 🦥</label>
+                                
+                                <input type="radio" id="reason-rude" name="reason" value="무례함" hidden>
+                                <label for="reason-rude" class="reason-btn {% if request.form.get('reason') == '무례함' %}selected{% endif %}">무례함 😒</label>
+                                
+                                <input type="radio" id="reason-blame" name="reason" value="남탓만 함" hidden>
+                                <label for="reason-blame" class="reason-btn {% if request.form.get('reason') == '남탓만 함' %}selected{% endif %}">남탓만 함 👉</label>
+                                
+                                <input type="radio" id="reason-selfish" name="reason" value="이기적" hidden>
+                                <label for="reason-selfish" class="reason-btn {% if request.form.get('reason') == '이기적' %}selected{% endif %}">이기적 🤷</label>
+                                
+                                <input type="radio" id="reason-calculative" name="reason" value="계산적" hidden>
+                                <label for="reason-calculative" class="reason-btn {% if request.form.get('reason') == '계산적' %}selected{% endif %}">계산적 🧮</label>
+                                
+                                <input type="radio" id="reason-avoidant" name="reason" value="회피형" hidden>
+                                <label for="reason-avoidant" class="reason-btn {% if request.form.get('reason') == '회피형' %}selected{% endif %}">회피형 🏃</label>
+                                
+                                <input type="radio" id="reason-frustrating" name="reason" value="답답함" hidden>
+                                <label for="reason-frustrating" class="reason-btn {% if request.form.get('reason') == '답답함' %}selected{% endif %}">답답함 😫</label>
+                                
+                                <input type="radio" id="reason-other" name="reason" value="기타" hidden>
+                                <label for="reason-other" class="reason-btn {% if request.form.get('reason') == '기타' %}selected{% endif %}">기타 ✏️</label>
+                            </div>
+                            
+                            <div id="other-reason-container" style="display: none; margin-top: 10px;">
+                                <input type="text" id="other-reason-input" name="other_reason" placeholder="직접 입력해주세요" value="{{ request.form.get('other_reason', '') }}">
+                            </div>
+                            
+                            <p class="reason-note">선택하지 않으면 랜덤으로 생성됩니다</p>
                         </div>
                         
                         <button type="submit" class="button">🔥 구워버리기! 🔥</button>

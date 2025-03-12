@@ -16,10 +16,12 @@ def index():
     roast = None
     name = request.form.get('name', '') if request.method == 'POST' else ''
     level = request.form.get('level', '순한맛') if request.method == 'POST' else '순한맛'
+    reason = request.form.get('reason', '랜덤') if request.method == 'POST' else '랜덤'
+    other_reason = request.form.get('other_reason', '') if request.method == 'POST' else ''
 
     if request.method == 'POST':
         print(f"Form data: {request.form}")
-        print(f"Name: {name}, Level: {level}")
+        print(f"Name: {name}, Level: {level}, Reason: {reason}")
 
         if not name:
             roast = "이름을 입력해주세요!"
@@ -29,14 +31,23 @@ def index():
             try:
                 ending = "야" if is_consonant_ended(name) else "아"
                 tone = "mild" if level == "순한맛" else "spicy" if level == "매운맛" else "savage"
+
+                # Determine the reason to use in the prompt
+                reason_text = ""
+                if reason == "기타" and other_reason:
+                    reason_text = f"특정 행동 특성: {other_reason}을(를) 중심으로"
+                elif reason != "랜덤":
+                    reason_text = f"특정 행동 특성: {reason}을(를) 중심으로"
+
                 prompt = f"""
-                You are a witty Korean comedy writer and internet humor expert. Your task is to create ‘Korean-style roasts’ that blend internet community humor, variety show banter, and Twitter meme culture. The humor should be sharp yet playful—similar to how friends tease each other—but never overly crude or offensive. Avoid forced or unnatural translations, and use expressions that feel genuinely relatable to a Korean audience. The goal is to deliver short, punchy, and clever roasts that feel fun and engaging, while maintaining a balance between playful banter and lighthearted venting.
+                You are a witty Korean comedy writer and internet humor expert. Your task is to create 'Korean-style roasts' that blend internet community humor, variety show banter, and Twitter meme culture. The humor should be sharp yet playful—similar to how friends tease each other—but never overly crude or offensive. Avoid forced or unnatural translations, and use expressions that feel genuinely relatable to a Korean audience. The goal is to deliver short, punchy, and clever roasts that feel fun and engaging, while maintaining a balance between playful banter and lighthearted venting.
                 Generate a detailed and realistic roast in Korean, starting with "{name}{ending}, 너는". The roast should:
                 - Include specific traits or habits of the named person to ensure it feels personal and relevant.
                 - Be playfully annoying, maintaining an absurd yet teasing humor, without being mean or controversial.
                 - Reach a length of at least 5-6 sentences for depth, avoiding randomness to create coherence and fun.
                 - Use casual, natural Korean.
-                - only shows the korean roast. exclude any explanations and breakdowns.
+                - Only shows the korean roast. exclude any explanations and breakdowns.
+                {reason_text}
                 """
                 model = genai.GenerativeModel('gemini-2.0-flash')  # Updated model
                 response = model.generate_content(prompt)
