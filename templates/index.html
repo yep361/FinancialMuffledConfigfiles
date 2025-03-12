@@ -387,8 +387,12 @@
             <div id="result-page" class="page {% if roast %}active{% endif %}">
                 {% if roast %}
                 <div class="card">
-                    <h1>로스트 결과 🍗</h1>
-                    <div class="roast-result" id="roast-content">{{ roast }}</div>
+                    <h1>로스트 결과 🍗</h1><br>
+                    <div style="margin: 10px auto; padding: 10px; border-radius: var(--border-radius); background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); max-width: 300px; text-align: center;">
+                        <h2 style="font-size: 2em; margin: 0;">{{ name }}</h2>  <!-- 이름을 작게 표시 -->
+                        <div style="font-size: 2em; margin: 0;">🔥🔥🔥</div>  <!-- 불 이모지 크기 조정 -->
+                    </div>
+                    <div class="roast-result" id="roast-content" style="font-size: 1.1em; line-height: 1.3; text-align: left; padding: 20px; background: #FFFAF0; border-radius: var(--border-radius); margin: 20px auto; border-left: 4px solid var(--primary-color); max-width: 500px;">{{ roast }}</div>  <!-- Roast content 크기 조정 -->
                     
                     <div class="share-container">
                         <button id="share-btn" class="button">📤 공유하기</button>
