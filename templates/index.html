@@ -296,15 +296,19 @@
             const shareLinkBtn = document.getElementById('share-link-btn');
             const saveImageBtn = document.getElementById('save-image-btn');
 
+            // 공유 버튼이 존재하는지 확인 후 이벤트 리스너 추가
             if (shareBtn) {
                 shareBtn.addEventListener('click', function() {
                     shareOptions.style.display = 'block';
                 });
             }
-
-            closeShareBtn.addEventListener('click', function() {
-                shareOptions.style.display = 'none';
-            });
+            
+            // 닫기 버튼이 존재하는지 확인 후 이벤트 리스너 추가
+            if (closeShareBtn) {
+                closeShareBtn.addEventListener('click', function() {
+                    shareOptions.style.display = 'none';
+                });
+            }
 
             copyTextBtn.addEventListener('click', function() {
                 const roastContent = document.getElementById('roast-content').innerText;
@@ -322,16 +326,59 @@
 
 
             shareLinkBtn.addEventListener('click', function() {
-                // 여기에 결과 페이지 링크 생성 및 공유 로직 추가 (백엔드 연동 필요)
-                alert('링크 공유 기능은 아직 구현되지 않았습니다.');
-                shareOptions.style.display = 'none';
+                const currentUrl = window.location.href;
+                
+                // 모바일 지원하는 공유 API 사용 시도
+                if (navigator.share) {
+                    navigator.share({
+                        title: '랜덤 로스트 결과',
+                        text: '{{ name }}님을 위한 랜덤 로스트 결과입니다!',
+                        url: currentUrl
+                    })
+                    .then(() => {
+                        console.log('공유에 성공했습니다.');
+                        shareOptions.style.display = 'none';
+                    })
+                    .catch((error) => {
+                        console.log('공유에 실패했습니다.', error);
+                        fallbackShare(currentUrl);
+                    });
+                } else {
+                    // 일반 브라우저에서는 URL 클립보드에 복사
+                    fallbackShare(currentUrl);
+                }
+                
+                function fallbackShare(url) {
+                    navigator.clipboard.writeText(url)
+                        .then(() => {
+                            alert('링크가 클립보드에 복사되었습니다!');
+                            shareOptions.style.display = 'none';
+                        })
+                        .catch(err => {
+                            console.error('링크 복사 실패:', err);
+                            alert('링크를 복사하지 못했습니다. URL: ' + url);
+                            shareOptions.style.display = 'none';
+                        });
+                }
             });
 
             saveImageBtn.addEventListener('click', function() {
-                html2canvas(document.querySelector('.card')).then(function(canvas) {
+                // 결과 카드만 선택
+                const resultCard = document.querySelector('.card');
+                
+                // 캡처 품질 향상을 위한 옵션
+                const options = {
+                    scale: 2, // 해상도 향상
+                    backgroundColor: '#FAFAFA', // 배경색 설정
+                    useCORS: true, // CORS 이미지 허용
+                    logging: false // 로깅 비활성화
+                };
+                
+                html2canvas(resultCard, options).then(function(canvas) {
+                    // 이미지 다운로드
                     const link = document.createElement('a');
-                    link.download = 'roast_image.png';
-                    link.href = canvas.toDataURL();
+                    link.download = '{{ name }}_roast.png';
+                    link.href = canvas.toDataURL('image/png');
                     link.click();
                     shareOptions.style.display = 'none';
                 });

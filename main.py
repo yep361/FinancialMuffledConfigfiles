@@ -71,7 +71,11 @@ def index():
     # 결과가 있는 경우, 해당 결과를 URL 파라미터로 전달
     share_url = None
     if roast:
-        share_url = f"{request.url_root}?name={name}&roast={roast}"
+        # URL 안전한 형태로 변환하여 전달
+        from urllib.parse import quote
+        encoded_roast = quote(roast)
+        encoded_name = quote(name)
+        share_url = f"{request.url_root}?name={encoded_name}&roast={encoded_roast}"
     
     return render_template('index.html', roast=roast, name=name, share_url=share_url)
 
