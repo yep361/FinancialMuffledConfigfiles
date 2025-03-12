@@ -291,12 +291,22 @@
             }
 
             // Share button functionality - 페이지에 해당 요소가 있는지 확인 후 이벤트 리스너 추가
+            // 모든 요소를 가져옵니다
             const shareBtn = document.getElementById('share-btn');
             const shareOptions = document.getElementById('share-options');
             const closeShareBtn = document.getElementById('close-share-btn');
             const copyTextBtn = document.getElementById('copy-text-btn');
             const shareLinkBtn = document.getElementById('share-link-btn');
             const saveImageBtn = document.getElementById('save-image-btn');
+
+            console.log('Share buttons found:', {
+                shareBtn: !!shareBtn,
+                shareOptions: !!shareOptions,
+                closeShareBtn: !!closeShareBtn,
+                copyTextBtn: !!copyTextBtn,
+                shareLinkBtn: !!shareLinkBtn,
+                saveImageBtn: !!saveImageBtn
+            });
 
             // 공유 버튼이 존재하는지 확인 후 이벤트 리스너 추가
             if (shareBtn && shareOptions) {
@@ -373,61 +383,126 @@
                 });
             }
 
-            saveImageBtn.addEventListener('click', function() {
-                // 결과 카드만 선택 (외부 카드 컨테이너)
-                const resultCard = document.querySelector('.card');
-                
-                if (!resultCard) {
-                    console.error('결과 카드 요소를 찾을 수 없습니다.');
-                    alert('이미지 저장에 실패했습니다. 페이지를 새로고침 후 다시 시도해주세요.');
-                    return;
-                }
-                
-                // 디버깅을 위한 로그
-                console.log('Capturing element:', resultCard);
-                
-                // 캡처 품질 향상을 위한 옵션
-                const options = {
-                    scale: 2, // 해상도 향상
-                    backgroundColor: '#FAFAFA', // 배경색 설정
-                    useCORS: true, // CORS 이미지 허용
-                    logging: true, // 로깅 활성화
-                    allowTaint: true, // 외부 이미지 처리 허용
-                    foreignObjectRendering: false // foreignObject 렌더링 비활성화
-                };
-                
-                // DOM이 완전히 렌더링될 시간을 주기 위해 setTimeout 사용
-                setTimeout(() => {
-                    html2canvas(resultCard, options).then(function(canvas) {
-                        try {
-                            // 캔버스를 데이터 URL로 변환
-                            const dataUrl = canvas.toDataURL('image/png');
-                            
-                            // 데이터 URL이 유효한지 확인
-                            if (!dataUrl || dataUrl === 'data:,') {
-                                throw new Error('캔버스 데이터를 생성할 수 없습니다.');
+            // saveImageBtn 요소가 있는지 확인 후 이벤트 리스너 추가
+            if (saveImageBtn) {
+                saveImageBtn.addEventListener('click', function() {
+                    // 결과 카드 컨테이너 선택
+                    const resultCard = document.querySelector('#result-page .card');
+                    
+                    if (!resultCard) {
+                        console.error('결과 카드 요소를 찾을 수 없습니다.');
+                        alert('이미지 저장에 실패했습니다. 페이지를 새로고침 후 다시 시도해주세요.');
+                        return;
+                    }
+                    
+                    // 디버깅을 위한 로그
+                    console.log('Capturing element:', resultCard);
+                    
+                    // 모든 이미지가 로드될 때까지 기다립니다
+                    const images = resultCard.querySelectorAll('img');
+                    let imagesLoaded = true;
+                    
+                    if (images.length > 0) {
+                        for (let i = 0; i < images.length; i++) {
+                            if (!images[i].complete) {
+                                imagesLoaded = false;
+                                break;
                             }
-                            
-                            // 이미지 다운로드
-                            const link = document.createElement('a');
-                            link.download = '{{ name }}_roast.png';
-                            link.href = dataUrl;
-                            document.body.appendChild(link); // DOM에 임시로 추가
-                            link.click();
-                            document.body.removeChild(link); // DOM에서 제거
-                            shareOptions.style.display = 'none';
-                            
-                            console.log('이미지 저장 성공');
-                        } catch (error) {
-                            console.error('이미지 처리 오류:', error);
-                            alert('이미지를 생성하는 중 오류가 발생했습니다: ' + error.message);
                         }
-                    }).catch(function(error) {
-                        console.error('HTML 캡처 실패:', error);
-                        alert('화면 캡처에 실패했습니다: ' + error.message);
-                    });
-                }, 100);
-            });
+                    }
+                    
+                    if (!imagesLoaded) {
+                        alert('이미지가 로드 중입니다. 잠시 후 다시 시도해주세요.');
+                        return;
+                    }
+                    
+                    // 캡처 전에 스타일 백업
+                    const originalStyles = {
+                        position: resultCard.style.position,
+                        transform: resultCard.style.transform,
+                        zIndex: resultCard.style.zIndex,
+                        opacity: resultCard.style.opacity
+                    };
+                    
+                    // 임시 스타일 설정 - 캡처용
+                    resultCard.style.position = 'relative';
+                    resultCard.style.transform = 'none';
+                    resultCard.style.zIndex = '1';
+                    resultCard.style.opacity = '1';
+                    
+                    // 캡처 품질 향상을 위한 옵션
+                    const options = {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        useCORS: true,
+                        allowTaint: true,
+                        removeContainer: false,
+                        logging: false,
+                        letterRendering: true,
+                        imageTimeout: 0,
+                        ignoreElements: (el) => el.id === 'share-options'
+                    };
+                    
+                    // DOM이 완전히 렌더링될 시간을 주기
+                    setTimeout(() => {
+                        html2canvas(resultCard, options).then(function(canvas) {
+                            try {
+                                // 캔버스 이미지 데이터 URL 생성
+                                canvas.toBlob(function(blob) {
+                                    if (!blob) {
+                                        throw new Error('이미지 데이터를 생성할 수 없습니다.');
+                                    }
+                                    
+                                    // Blob URL 생성
+                                    const blobUrl = URL.createObjectURL(blob);
+                                    
+                                    // 이미지 다운로드
+                                    const link = document.createElement('a');
+                                    link.download = '{{ name }}_로스트.png';
+                                    link.href = blobUrl;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    
+                                    // 정리
+                                    setTimeout(() => {
+                                        URL.revokeObjectURL(blobUrl);
+                                        document.body.removeChild(link);
+                                    }, 100);
+                                    
+                                    // 원래 스타일 복원
+                                    resultCard.style.position = originalStyles.position;
+                                    resultCard.style.transform = originalStyles.transform;
+                                    resultCard.style.zIndex = originalStyles.zIndex;
+                                    resultCard.style.opacity = originalStyles.opacity;
+                                    
+                                    if (shareOptions) shareOptions.style.display = 'none';
+                                    console.log('이미지 저장 성공');
+                                });
+                            } catch (error) {
+                                console.error('이미지 처리 오류:', error);
+                                alert('이미지를 생성하는 중 오류가 발생했습니다: ' + error.message);
+                                
+                                // 원래 스타일 복원
+                                resultCard.style.position = originalStyles.position;
+                                resultCard.style.transform = originalStyles.transform;
+                                resultCard.style.zIndex = originalStyles.zIndex;
+                                resultCard.style.opacity = originalStyles.opacity;
+                            }
+                        }).catch(function(error) {
+                            console.error('HTML 캡처 실패:', error);
+                            alert('화면 캡처에 실패했습니다: ' + error.message);
+                            
+                            // 원래 스타일 복원
+                            resultCard.style.position = originalStyles.position;
+                            resultCard.style.transform = originalStyles.transform;
+                            resultCard.style.zIndex = originalStyles.zIndex;
+                            resultCard.style.opacity = originalStyles.opacity;
+                        });
+                    }, 300);
+                });
+            } else {
+                console.error('saveImageBtn 요소를 찾을 수 없습니다.');
+            }
 
             function manualCopy() {
                 const textArea = document.createElement('textarea');
