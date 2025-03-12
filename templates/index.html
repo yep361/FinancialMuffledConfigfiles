@@ -274,21 +274,23 @@
 
                     // Show/hide other reason input
                     const otherReasonContainer = document.getElementById('other-reason-container');
-                    if (this.getAttribute('for') === 'reason-other') {
+                    if (otherReasonContainer && this.getAttribute('for') === 'reason-other') {
                         otherReasonContainer.style.display = 'block';
                         document.getElementById('other-reason-input').focus();
-                    } else {
+                    } else if (otherReasonContainer) {
                         otherReasonContainer.style.display = 'none';
                     }
                 });
             });
 
             // Initialize other reason container visibility
-            if (document.getElementById('reason-other').checked) {
-                document.getElementById('other-reason-container').style.display = 'block';
+            const reasonOther = document.getElementById('reason-other');
+            const otherReasonContainer = document.getElementById('other-reason-container');
+            if (reasonOther && reasonOther.checked && otherReasonContainer) {
+                otherReasonContainer.style.display = 'block';
             }
 
-            // Share button functionality
+            // Share button functionality - 페이지에 해당 요소가 있는지 확인 후 이벤트 리스너 추가
             const shareBtn = document.getElementById('share-btn');
             const shareOptions = document.getElementById('share-options');
             const closeShareBtn = document.getElementById('close-share-btn');
@@ -297,91 +299,134 @@
             const saveImageBtn = document.getElementById('save-image-btn');
 
             // 공유 버튼이 존재하는지 확인 후 이벤트 리스너 추가
-            if (shareBtn) {
+            if (shareBtn && shareOptions) {
                 shareBtn.addEventListener('click', function() {
                     shareOptions.style.display = 'block';
                 });
             }
             
             // 닫기 버튼이 존재하는지 확인 후 이벤트 리스너 추가
-            if (closeShareBtn) {
+            if (closeShareBtn && shareOptions) {
                 closeShareBtn.addEventListener('click', function() {
                     shareOptions.style.display = 'none';
                 });
             }
 
-            copyTextBtn.addEventListener('click', function() {
-                const roastContent = document.getElementById('roast-content').innerText;
-                navigator.clipboard.writeText(roastContent)
-                    .then(() => {
-                        alert('텍스트가 클립보드에 복사되었습니다!');
-                        shareOptions.style.display = 'none';
-                    })
-                    .catch(err => {
-                        console.error('복사 실패:', err);
-                        alert('텍스트 복사에 실패했습니다.');
-                        shareOptions.style.display = 'none';
-                    });
-            });
+            // 요소가 존재할 때만 이벤트 리스너 추가
+            if (copyTextBtn && shareOptions) {
+                copyTextBtn.addEventListener('click', function() {
+                    const roastContent = document.getElementById('roast-content');
+                    if (roastContent) {
+                        navigator.clipboard.writeText(roastContent.innerText)
+                            .then(() => {
+                                alert('텍스트가 클립보드에 복사되었습니다!');
+                                shareOptions.style.display = 'none';
+                            })
+                            .catch(err => {
+                                console.error('복사 실패:', err);
+                                alert('텍스트 복사에 실패했습니다.');
+                                shareOptions.style.display = 'none';
+                            });
+                    } else {
+                        alert('복사할 내용을 찾을 수 없습니다.');
+                    }
+                });
+            }
 
-
-            shareLinkBtn.addEventListener('click', function() {
-                const currentUrl = window.location.href;
-                
-                // 모바일 지원하는 공유 API 사용 시도
-                if (navigator.share) {
-                    navigator.share({
-                        title: '랜덤 로스트 결과',
-                        text: '{{ name }}님을 위한 랜덤 로스트 결과입니다!',
-                        url: currentUrl
-                    })
-                    .then(() => {
-                        console.log('공유에 성공했습니다.');
-                        shareOptions.style.display = 'none';
-                    })
-                    .catch((error) => {
-                        console.log('공유에 실패했습니다.', error);
-                        fallbackShare(currentUrl);
-                    });
-                } else {
-                    // 일반 브라우저에서는 URL 클립보드에 복사
-                    fallbackShare(currentUrl);
-                }
-                
-                function fallbackShare(url) {
-                    navigator.clipboard.writeText(url)
+            // 링크 공유 버튼
+            if (shareLinkBtn && shareOptions) {
+                shareLinkBtn.addEventListener('click', function() {
+                    const currentUrl = window.location.href;
+                    
+                    // 모바일 지원하는 공유 API 사용 시도
+                    if (navigator.share) {
+                        navigator.share({
+                            title: '랜덤 로스트 결과',
+                            text: '{{ name }}님을 위한 랜덤 로스트 결과입니다!',
+                            url: currentUrl
+                        })
                         .then(() => {
-                            alert('링크가 클립보드에 복사되었습니다!');
+                            console.log('공유에 성공했습니다.');
                             shareOptions.style.display = 'none';
                         })
-                        .catch(err => {
-                            console.error('링크 복사 실패:', err);
-                            alert('링크를 복사하지 못했습니다. URL: ' + url);
-                            shareOptions.style.display = 'none';
+                        .catch((error) => {
+                            console.log('공유에 실패했습니다.', error);
+                            fallbackShare(currentUrl);
                         });
-                }
-            });
+                    } else {
+                        // 일반 브라우저에서는 URL 클립보드에 복사
+                        fallbackShare(currentUrl);
+                    }
+                    
+                    function fallbackShare(url) {
+                        navigator.clipboard.writeText(url)
+                            .then(() => {
+                                alert('링크가 클립보드에 복사되었습니다!');
+                                shareOptions.style.display = 'none';
+                            })
+                            .catch(err => {
+                                console.error('링크 복사 실패:', err);
+                                alert('링크를 복사하지 못했습니다. URL: ' + url);
+                                shareOptions.style.display = 'none';
+                            });
+                    }
+                });
+            }
 
             saveImageBtn.addEventListener('click', function() {
-                // 결과 카드만 선택
+                // 결과 카드만 선택 (외부 카드 컨테이너)
                 const resultCard = document.querySelector('.card');
+                
+                if (!resultCard) {
+                    console.error('결과 카드 요소를 찾을 수 없습니다.');
+                    alert('이미지 저장에 실패했습니다. 페이지를 새로고침 후 다시 시도해주세요.');
+                    return;
+                }
+                
+                // 디버깅을 위한 로그
+                console.log('Capturing element:', resultCard);
                 
                 // 캡처 품질 향상을 위한 옵션
                 const options = {
                     scale: 2, // 해상도 향상
                     backgroundColor: '#FAFAFA', // 배경색 설정
                     useCORS: true, // CORS 이미지 허용
-                    logging: false // 로깅 비활성화
+                    logging: true, // 로깅 활성화
+                    allowTaint: true, // 외부 이미지 처리 허용
+                    foreignObjectRendering: false // foreignObject 렌더링 비활성화
                 };
                 
-                html2canvas(resultCard, options).then(function(canvas) {
-                    // 이미지 다운로드
-                    const link = document.createElement('a');
-                    link.download = '{{ name }}_roast.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    shareOptions.style.display = 'none';
-                });
+                // DOM이 완전히 렌더링될 시간을 주기 위해 setTimeout 사용
+                setTimeout(() => {
+                    html2canvas(resultCard, options).then(function(canvas) {
+                        try {
+                            // 캔버스를 데이터 URL로 변환
+                            const dataUrl = canvas.toDataURL('image/png');
+                            
+                            // 데이터 URL이 유효한지 확인
+                            if (!dataUrl || dataUrl === 'data:,') {
+                                throw new Error('캔버스 데이터를 생성할 수 없습니다.');
+                            }
+                            
+                            // 이미지 다운로드
+                            const link = document.createElement('a');
+                            link.download = '{{ name }}_roast.png';
+                            link.href = dataUrl;
+                            document.body.appendChild(link); // DOM에 임시로 추가
+                            link.click();
+                            document.body.removeChild(link); // DOM에서 제거
+                            shareOptions.style.display = 'none';
+                            
+                            console.log('이미지 저장 성공');
+                        } catch (error) {
+                            console.error('이미지 처리 오류:', error);
+                            alert('이미지를 생성하는 중 오류가 발생했습니다: ' + error.message);
+                        }
+                    }).catch(function(error) {
+                        console.error('HTML 캡처 실패:', error);
+                        alert('화면 캡처에 실패했습니다: ' + error.message);
+                    });
+                }, 100);
             });
 
             function manualCopy() {
