@@ -13,8 +13,8 @@ else:
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    roast = None
-    name = request.form.get('name', '') if request.method == 'POST' else ''
+    roast = request.args.get('roast', None)  # URL 쿼리 파라미터에서 roast 가져오기
+    name = request.form.get('name', '') if request.method == 'POST' else request.args.get('name', '')
     level = request.form.get('level', '순한맛') if request.method == 'POST' else '순한맛'
     reason = request.form.get('reason', '랜덤') if request.method == 'POST' else '랜덤'
     other_reason = request.form.get('other_reason', '') if request.method == 'POST' else ''
@@ -66,7 +66,12 @@ def index():
                 print(f"Error: {e}")
                 roast = f"굽기 실패! 오류: {e} 다시 시도해 보세요 🍗"
 
-    return render_template('index.html', roast=roast, name=name)
+    # 결과가 있는 경우, 해당 결과를 URL 파라미터로 전달
+    share_url = None
+    if roast:
+        share_url = f"{request.url_root}?name={name}&roast={roast}"
+    
+    return render_template('index.html', roast=roast, name=name, share_url=share_url)
 
 def is_consonant_ended(name):
     if not name:
