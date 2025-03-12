@@ -364,6 +364,9 @@
                                 <input type="radio" id="reason-frustrating" name="reason" value="답답함" hidden>
                                 <label for="reason-frustrating" class="reason-btn {% if request.form.get('reason') == '답답함' %}selected{% endif %}">답답함 😫</label>
                                 
+                                <input type="radio" id="reason-dislike" name="reason" value="그냥 싫음" hidden>
+                                <label for="reason-dislike" class="reason-btn {% if request.form.get('reason') == '그냥 싫음' %}selected{% endif %}">그냥 싫음 😒</label>
+                                
                                 <input type="radio" id="reason-other" name="reason" value="기타" hidden>
                                 <label for="reason-other" class="reason-btn {% if request.form.get('reason') == '기타' %}selected{% endif %}">기타 ✏️</label>
                             </div>
