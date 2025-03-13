@@ -34,10 +34,11 @@ def index():
 
                 # Determine the reason to use in the prompt
                 reason_text = ""
-                if reason == "기타" and other_reason:
-                    reason_text = f"특정 행동 특성: {other_reason}을(를) 중심으로"
-                elif reason != "랜덤":
-                    reason_text = f"특정 행동 특성: {reason}을(를) 중심으로"
+                if reason != "랜덤":  # Adjusted to treat 랜덤 differently
+                    if reason == "기타" and other_reason:
+                        reason_text = f"특정 행동 특성: {other_reason}을(를) 중심으로"
+                    else:
+                        reason_text = f"특정 행동 특성: {reason}을(를) 중심으로"
 
                 prompt = f"""
                 
